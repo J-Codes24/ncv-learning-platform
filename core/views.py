@@ -4,6 +4,8 @@ from django.http import HttpResponse
 from django.contrib.auth import get_user_model
 from .models import Subject, Video, PastPaper
 
+VALID_LEVELS = ['L2', 'L3', 'L4']
+
 
 def home(request):
     subjects = Subject.objects.all()
@@ -17,29 +19,37 @@ def subject_detail(request, subject_id):
 
 def videos_by_subject(request, subject_id):
     subject = get_object_or_404(Subject, id=subject_id)
-    videos = Video.objects.filter(subject=subject)
+    level = request.GET.get('level', '').strip()
 
-    level = request.GET.get('level')
-    if level:
-        videos = videos.filter(level=level)
+    if level in VALID_LEVELS:
+        videos = Video.objects.filter(subject=subject, level=level)
+    else:
+        videos = Video.objects.none()
+        level = ''
 
     return render(request, 'core/videos_by_subject.html', {
         'subject': subject,
         'videos': videos,
+        'selected_level': level,
+        'valid_levels': VALID_LEVELS,
     })
 
 
 def past_papers_by_subject(request, subject_id):
     subject = get_object_or_404(Subject, id=subject_id)
-    papers = PastPaper.objects.filter(subject=subject)
+    level = request.GET.get('level', '').strip()
 
-    level = request.GET.get('level')
-    if level:
-        papers = papers.filter(level=level)
+    if level in VALID_LEVELS:
+        papers = PastPaper.objects.filter(subject=subject, level=level)
+    else:
+        papers = PastPaper.objects.none()
+        level = ''
 
     return render(request, 'core/past_papers_by_subject.html', {
         'subject': subject,
         'papers': papers,
+        'selected_level': level,
+        'valid_levels': VALID_LEVELS,
     })
 
 
