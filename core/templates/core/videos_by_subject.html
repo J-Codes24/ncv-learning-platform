@@ -17,16 +17,16 @@
         }
 
         .page-overlay {
-            background: rgba(0,0,0,0.55);
+            background: rgba(0, 0, 0, 0.55);
             min-height: 100vh;
             padding-bottom: 40px;
         }
 
         .content-box {
-            background: rgba(255,255,255,0.95);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             padding: 35px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
         }
 
         .video-card {
@@ -37,12 +37,13 @@
 
         .video-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 14px 28px rgba(0,0,0,0.18);
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
         }
 
         video {
             width: 100%;
             border-radius: 12px;
+            background-color: #000;
         }
 
         .filter-btns a {
@@ -76,22 +77,39 @@
                         <div class="card video-card shadow-sm h-100">
                             <div class="card-body">
                                 <h5 class="card-title">{{ video.title }}</h5>
-                                <p class="card-text">
+
+                                <p class="card-text mb-2">
                                     <strong>Level:</strong> {{ video.level }}
                                 </p>
 
+                                {% if video.description %}
+                                    <p class="card-text text-muted">{{ video.description }}</p>
+                                {% endif %}
+
                                 {% if video.video_file %}
-                                    <video controls>
-                                        <source src="{{ video.video_file.url }}">
+                                    <video controls preload="metadata">
+                                        <source src="{{ video.video_file.url }}" type="video/mp4">
                                         Your browser does not support the video tag.
                                     </video>
+
+                                    <div class="mt-3">
+                                        <a href="{{ video.video_file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            Open Video Directly
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-warning mt-3 mb-0">
+                                        No video file uploaded for this lesson yet.
+                                    </div>
                                 {% endif %}
                             </div>
                         </div>
                     </div>
                 {% empty %}
-                    <div class="alert alert-warning text-center">
-                        No videos available for this subject yet.
+                    <div class="col-12">
+                        <div class="alert alert-warning text-center">
+                            No videos available for this subject yet.
+                        </div>
                     </div>
                 {% endfor %}
             </div>
