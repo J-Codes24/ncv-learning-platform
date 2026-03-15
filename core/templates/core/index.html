@@ -4,13 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NCV Learning Platform helps NCV students access subject videos, past papers, and track their learning progress online.">
+    <meta name="google-adsense-account" content="ca-pub-1066044704966443">
     <title>NCV Learning Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1066044704966443"
-     crossorigin="anonymous"></script>
-     
-   <style>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1066044704966443" crossorigin="anonymous"></script>
+    <style>
         body {
             background-image: url("{% static 'images/ncv-learning-image.png' %}");
             background-size: cover;
@@ -71,62 +70,42 @@
             color: #6c757d;
             font-weight: 600;
         }
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+        }
     </style>
 </head>
 <body>
 <div class="main-overlay">
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'home' %}">NCV Learning</a>
 
-```
-<a class="navbar-brand" href="{% url 'home' %}">NCV Learning</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-  <span class="navbar-toggler-icon"></span>
-</button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Subjects</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'privacy_policy' %}">Privacy Policy</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'terms' %}">Terms</a></li>
+      </ul>
 
-<div class="collapse navbar-collapse" id="navbarNav">
-
-  <ul class="navbar-nav me-auto">
-    <li class="nav-item">
-      <a class="nav-link" href="{% url 'home' %}">Subjects</a>
-    </li>
-  </ul>
-
-  <ul class="navbar-nav">
-
-    {% if user.is_authenticated %}
-
-    <li class="nav-item">
-      <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-    </li>
-
-    <li class="nav-item">
-      <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-    </li>
-
-    {% else %}
-
-    <li class="nav-item">
-      <a class="nav-link" href="{% url 'login' %}">Login</a>
-    </li>
-
-    <li class="nav-item">
-      <a class="nav-link btn btn-success text-white ms-2 px-3" href="{% url 'register' %}">
-        Register
-      </a>
-    </li>
-
-    {% endif %}
-
-  </ul>
-
-</div>
-```
-
+      <ul class="navbar-nav">
+        {% if user.is_authenticated %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+        {% else %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+        <li class="nav-item"><a class="nav-link btn btn-success text-white ms-2 px-3" href="{% url 'register' %}">Register</a></li>
+        {% endif %}
+      </ul>
+    </div>
   </div>
 </nav>
-
 
     <div class="container py-5">
         <div class="hero-box text-center mb-5">
@@ -188,6 +167,11 @@
             </div>
         </div>
 
+        <div class="hero-box text-center mb-5">
+            <h3 class="mb-3">About the Platform</h3>
+            <p class="text-muted mb-0">NCV Learning Platform is built to support NCV students with accessible digital learning resources. The platform aims to make exam preparation easier through organised subject materials, revision support, and student progress tracking.</p>
+        </div>
+
         <div class="hero-box text-center">
             <h3 class="mb-4">Available Subjects</h3>
 
@@ -197,9 +181,7 @@
                         <div class="card subject-card shadow-sm h-100">
                             <div class="card-body text-center d-flex flex-column justify-content-center">
                                 <h5 class="card-title mb-3 subject-name">{{ subject.name }}</h5>
-                                <a href="{% url 'subject_detail' subject.id %}" class="btn btn-primary subject-btn">
-                                    Open Subject
-                                </a>
+                                <a href="{% url 'subject_detail' subject.id %}" class="btn btn-primary subject-btn">Open Subject</a>
                             </div>
                         </div>
                     </div>
@@ -213,28 +195,33 @@
     </div>
 </div>
 
+{% include "core/footer.html" %}
+
 <script>
     const searchInput = document.getElementById('subjectSearch');
     const subjectItems = document.querySelectorAll('.subject-item');
     const noResultsMessage = document.getElementById('noResultsMessage');
 
-    searchInput.addEventListener('keyup', function() {
-        const searchValue = this.value.toLowerCase();
-        let visibleCount = 0;
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const searchValue = this.value.toLowerCase();
+            let visibleCount = 0;
 
-        subjectItems.forEach(function(item) {
-            const subjectName = item.querySelector('.subject-name').textContent.toLowerCase();
+            subjectItems.forEach(function(item) {
+                const subjectName = item.querySelector('.subject-name').textContent.toLowerCase();
 
-            if (subjectName.includes(searchValue)) {
-                item.style.display = 'block';
-                visibleCount++;
-            } else {
-                item.style.display = 'none';
-            }
+                if (subjectName.includes(searchValue)) {
+                    item.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            noResultsMessage.style.display = visibleCount === 0 ? 'block' : 'none';
         });
-
-        noResultsMessage.style.display = visibleCount === 0 ? 'block' : 'none';
-    });
+    }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

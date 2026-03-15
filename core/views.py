@@ -87,6 +87,22 @@ def past_papers_by_subject(request, subject_id):
     )
 
 
+def about(request):
+    return render(request, "core/about.html")
+
+
+def privacy_policy(request):
+    return render(request, "core/privacy_policy.html")
+
+
+def contact(request):
+    return render(request, "core/contact.html")
+
+
+def terms(request):
+    return render(request, "core/terms.html")
+
+
 def register(request):
     if request.user.is_authenticated:
         return redirect("dashboard")

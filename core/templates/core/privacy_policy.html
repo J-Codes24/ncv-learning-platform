@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-adsense-account" content="ca-pub-1066044704966443">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1066044704966443" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-image: url("{% static 'images/ncv-learning-image.png' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        .page-overlay {
+            background: rgba(0,0,0,0.55);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+        .content-box {
+            background: rgba(255,255,255,0.96);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+        }
+        footer { background: rgba(255,255,255,0.95); }
+    </style>
+</head>
+<body>
+<div class="page-overlay">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">🎓 NCV Learning</a>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{% url 'home' %}" class="btn btn-outline-light btn-sm">Home</a>
+                <a href="{% url 'about' %}" class="btn btn-outline-light btn-sm">About</a>
+                <a href="{% url 'privacy_policy' %}" class="btn btn-outline-light btn-sm">Privacy Policy</a>
+                <a href="{% url 'contact' %}" class="btn btn-outline-light btn-sm">Contact</a>
+                <a href="{% url 'terms' %}" class="btn btn-outline-light btn-sm">Terms</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container py-5">
+        <div class="content-box">
+            <h1 class="mb-4">Privacy Policy</h1>
+            <p>This Privacy Policy explains how NCV Learning Platform collects, uses, and protects user information.</p>
+            <h3 class="mt-4">Information we may collect</h3>
+            <ul>
+                <li>Account information such as username and login details</li>
+                <li>Learning progress information, including completed videos and viewed papers</li>
+                <li>Basic technical information such as browser type, pages visited, and device information</li>
+            </ul>
+            <h3 class="mt-4">How information is used</h3>
+            <ul>
+                <li>To provide access to educational resources</li>
+                <li>To manage user accounts and platform security</li>
+                <li>To improve website performance and user experience</li>
+                <li>To monitor learning progress within the platform</li>
+            </ul>
+            <h3 class="mt-4">Cookies and advertising</h3>
+            <p>NCV Learning Platform may use cookies and similar technologies to improve the website experience. We may also use third-party services such as Google AdSense, which may use cookies to serve relevant ads based on visits to this and other websites.</p>
+            <p>Users can manage or disable cookies through their browser settings.</p>
+            <h3 class="mt-4">Data protection</h3>
+            <p>We take reasonable steps to protect user information, but no online platform can guarantee complete security.</p>
+            <h3 class="mt-4">Contact</h3>
+            <p class="mb-0">For privacy-related questions, please use the details on the Contact page and update them with your official support contact before publishing for final review.</p>
+        </div>
+    </div>
+</div>
+{% include "core/footer.html" %}
+</body>
+</html>
