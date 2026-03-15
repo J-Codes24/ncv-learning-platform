@@ -37,6 +37,9 @@
             transform: translateY(-6px);
             box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
         }
+        .level-link {
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -54,11 +57,11 @@
     <div class="container py-5">
         <div class="content-box text-center">
             <h1 class="mb-3">{{ subject.name }}</h1>
-<<<<<<< HEAD
             <p class="lead mb-3">Select a section below to access learning resources for this subject.</p>
 
             {% if available_levels %}
-                <p class="text-muted mb-5">Available levels: 
+                <p class="text-muted mb-5">
+                    Available levels:
                     {% for level in available_levels %}
                         <span class="badge text-bg-dark me-1">{{ level }}</span>
                     {% endfor %}
@@ -75,43 +78,31 @@
                             <h4>Video Lessons</h4>
                             <p>Watch available learning videos for this subject.</p>
                             {% if available_video_levels %}
-                                <p class="small text-muted">Levels:
+                                <p class="small text-muted mb-3">
+                                    Levels:
                                     {% for level in available_levels %}
-                                        {% if level in available_video_levels %}<span class="badge bg-primary me-1">{{ level }}</span>{% endif %}
+                                        {% if level in available_video_levels %}
+                                            <span class="badge bg-primary me-1">{{ level }}</span>
+                                        {% endif %}
                                     {% endfor %}
                                 </p>
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'videos_by_subject' subject.id %}" class="btn btn-primary">Open Videos</a>
+                                    <div class="d-flex justify-content-center flex-wrap gap-2 mt-2">
+                                        {% for level in available_levels %}
+                                            {% if level in available_video_levels %}
+                                                <a href="{% url 'videos_by_subject' subject.id %}?level={{ level }}" class="level-link badge bg-primary">{{ level }}</a>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
                             {% else %}
                                 <p class="small text-muted">No videos added yet.</p>
                             {% endif %}
-                            <a href="{% url 'videos_by_subject' subject.id %}" class="btn btn-primary">Open Videos</a>
-=======
-            <p class="lead text-muted mb-4">Select a level below. Only the resources for that level will open.</p>
-
-            {% if level_cards %}
-                <div class="row justify-content-center g-4">
-                    {% for level in level_cards %}
-                        <div class="col-md-6 col-lg-4">
-                            <div class="card option-card h-100 shadow-sm {% if level.is_selected %}border border-primary border-3{% endif %}">
-                                <div class="card-body p-4">
-                                    <div class="mb-3 fs-2">📘</div>
-                                    <h4>{{ level.code }}</h4>
-                                    <p class="text-muted mb-2">{{ level.video_count }} videos available</p>
-                                    <p class="text-muted mb-4">{{ level.paper_count }} past papers available</p>
-                                    <div class="d-grid gap-2">
-                                        <a href="{% url 'videos_by_subject' subject.id %}?level={{ level.code }}" class="btn btn-primary">Open Videos</a>
-                                        <a href="{% url 'past_papers_by_subject' subject.id %}?level={{ level.code }}" class="btn btn-success">Open Past Papers</a>
-                                    </div>
-                                </div>
-                            </div>
->>>>>>> 62079b602aff7f4d22408df3b927763fb23a091c
                         </div>
-                    {% endfor %}
+                    </div>
                 </div>
-            {% else %}
-                <div class="alert alert-warning">No videos or papers have been added for this subject yet.</div>
-            {% endif %}
 
-<<<<<<< HEAD
                 <div class="col-md-4">
                     <div class="card option-card h-100 shadow-sm">
                         <div class="card-body p-4">
@@ -119,15 +110,27 @@
                             <h4>Past Papers</h4>
                             <p>Open, preview, and download past exam papers.</p>
                             {% if available_paper_levels %}
-                                <p class="small text-muted">Levels:
+                                <p class="small text-muted mb-3">
+                                    Levels:
                                     {% for level in available_levels %}
-                                        {% if level in available_paper_levels %}<span class="badge bg-success me-1">{{ level }}</span>{% endif %}
+                                        {% if level in available_paper_levels %}
+                                            <span class="badge bg-success me-1">{{ level }}</span>
+                                        {% endif %}
                                     {% endfor %}
                                 </p>
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'past_papers_by_subject' subject.id %}" class="btn btn-success">Open Past Papers</a>
+                                    <div class="d-flex justify-content-center flex-wrap gap-2 mt-2">
+                                        {% for level in available_levels %}
+                                            {% if level in available_paper_levels %}
+                                                <a href="{% url 'past_papers_by_subject' subject.id %}?level={{ level }}" class="level-link badge bg-success">{{ level }}</a>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
                             {% else %}
                                 <p class="small text-muted">No past papers added yet.</p>
                             {% endif %}
-                            <a href="{% url 'past_papers_by_subject' subject.id %}" class="btn btn-success">Open Past Papers</a>
                         </div>
                     </div>
                 </div>
@@ -139,27 +142,33 @@
                             <h4>Study Material</h4>
                             <p>Open study guides, textbooks, notes, and PDF books.</p>
                             {% if available_study_levels %}
-                                <p class="small text-muted">Levels:
+                                <p class="small text-muted mb-3">
+                                    Levels:
                                     {% for level in available_levels %}
-                                        {% if level in available_study_levels %}<span class="badge bg-warning text-dark me-1">{{ level }}</span>{% endif %}
+                                        {% if level in available_study_levels %}
+                                            <span class="badge bg-warning text-dark me-1">{{ level }}</span>
+                                        {% endif %}
                                     {% endfor %}
                                 </p>
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'study_materials_by_subject' subject.id %}" class="btn btn-warning">Open Study Material</a>
+                                    <div class="d-flex justify-content-center flex-wrap gap-2 mt-2">
+                                        {% for level in available_levels %}
+                                            {% if level in available_study_levels %}
+                                                <a href="{% url 'study_materials_by_subject' subject.id %}?level={{ level }}" class="level-link badge bg-warning text-dark">{{ level }}</a>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
                             {% else %}
                                 <p class="small text-muted">No study material added yet.</p>
                             {% endif %}
-                            <a href="{% url 'study_materials_by_subject' subject.id %}" class="btn btn-warning">Open Study Material</a>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="mt-5">
-=======
-            <div class="mt-5 d-flex justify-content-center gap-2 flex-wrap">
-                {% if selected_level %}
-                    <a href="{% url 'home' %}?level={{ selected_level }}" class="btn btn-outline-primary">Back to {{ selected_level }} Subjects</a>
-                {% endif %}
->>>>>>> 62079b602aff7f4d22408df3b927763fb23a091c
                 <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
             </div>
         </div>
