@@ -47,3 +47,11 @@ class PaperProgressAdmin(admin.ModelAdmin):
     list_display = ["id", "student", "paper", "viewed", "viewed_at"]
     list_filter = ["viewed", "paper__subject", "paper__level"]
     search_fields = ["student__username", "paper__title"]
+
+from .models import StudyMaterial
+
+@admin.register(StudyMaterial)
+class StudyMaterialAdmin(admin.ModelAdmin):
+    list_display = ["id", "title", "subject", "level", "uploaded_at"]
+    list_filter = ["level", "subject"]
+    search_fields = ["title", "subject__name"]

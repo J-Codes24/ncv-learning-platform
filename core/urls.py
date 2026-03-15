@@ -12,6 +12,7 @@ urlpatterns = [
     path('subject/<int:subject_id>/', views.subject_detail, name='subject_detail'),
     path('subject/<int:subject_id>/videos/', views.videos_by_subject, name='videos_by_subject'),
     path('subject/<int:subject_id>/papers/', views.past_papers_by_subject, name='past_papers_by_subject'),
+    path('subject/<int:subject_id>/study-materials/', views.study_materials_by_subject, name='study_materials_by_subject'),
     path('video/<int:video_id>/complete/', views.mark_video_complete, name='video_complete'),
     path('paper/<int:paper_id>/viewed/', views.mark_paper_viewed, name='paper_viewed'),
     path('create-admin/', views.create_admin, name='create_admin'),

@@ -54,27 +54,75 @@
     <div class="container py-5">
         <div class="content-box text-center">
             <h1 class="mb-3">{{ subject.name }}</h1>
-            <p class="lead mb-5">Select a section below to access learning resources for this subject.</p>
+            <p class="lead mb-3">Select a section below to access learning resources for this subject.</p>
+
+            {% if available_levels %}
+                <p class="text-muted mb-5">Available levels: 
+                    {% for level in available_levels %}
+                        <span class="badge text-bg-dark me-1">{{ level }}</span>
+                    {% endfor %}
+                </p>
+            {% else %}
+                <div class="alert alert-warning mb-5">No content has been added for this subject yet.</div>
+            {% endif %}
 
             <div class="row g-4 justify-content-center">
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <div class="card option-card h-100 shadow-sm">
                         <div class="card-body p-4">
                             <div class="mb-3 fs-1">🎥</div>
                             <h4>Video Lessons</h4>
                             <p>Watch available learning videos for this subject.</p>
+                            {% if available_video_levels %}
+                                <p class="small text-muted">Levels:
+                                    {% for level in available_levels %}
+                                        {% if level in available_video_levels %}<span class="badge bg-primary me-1">{{ level }}</span>{% endif %}
+                                    {% endfor %}
+                                </p>
+                            {% else %}
+                                <p class="small text-muted">No videos added yet.</p>
+                            {% endif %}
                             <a href="{% url 'videos_by_subject' subject.id %}" class="btn btn-primary">Open Videos</a>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <div class="card option-card h-100 shadow-sm">
                         <div class="card-body p-4">
                             <div class="mb-3 fs-1">📄</div>
                             <h4>Past Papers</h4>
                             <p>Open, preview, and download past exam papers.</p>
+                            {% if available_paper_levels %}
+                                <p class="small text-muted">Levels:
+                                    {% for level in available_levels %}
+                                        {% if level in available_paper_levels %}<span class="badge bg-success me-1">{{ level }}</span>{% endif %}
+                                    {% endfor %}
+                                </p>
+                            {% else %}
+                                <p class="small text-muted">No past papers added yet.</p>
+                            {% endif %}
                             <a href="{% url 'past_papers_by_subject' subject.id %}" class="btn btn-success">Open Past Papers</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card option-card h-100 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="mb-3 fs-1">📚</div>
+                            <h4>Study Material</h4>
+                            <p>Open study guides, textbooks, notes, and PDF books.</p>
+                            {% if available_study_levels %}
+                                <p class="small text-muted">Levels:
+                                    {% for level in available_levels %}
+                                        {% if level in available_study_levels %}<span class="badge bg-warning text-dark me-1">{{ level }}</span>{% endif %}
+                                    {% endfor %}
+                                </p>
+                            {% else %}
+                                <p class="small text-muted">No study material added yet.</p>
+                            {% endif %}
+                            <a href="{% url 'study_materials_by_subject' subject.id %}" class="btn btn-warning">Open Study Material</a>
                         </div>
                     </div>
                 </div>

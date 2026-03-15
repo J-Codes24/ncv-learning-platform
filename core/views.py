@@ -10,6 +10,7 @@ from .models import (
     PaperProgress,
     PastPaper,
     StudentProfile,
+    StudyMaterial,
     Subject,
     Video,
     VideoProgress,
@@ -26,7 +27,26 @@ def home(request):
 @login_required
 def subject_detail(request, subject_id):
     subject = get_object_or_404(Subject, id=subject_id)
-    return render(request, "core/subject_detail.html", {"subject": subject})
+    available_video_levels = set(subject.videos.values_list("level", flat=True).distinct())
+    available_paper_levels = set(subject.past_papers.values_list("level", flat=True).distinct())
+    available_study_levels = set(subject.study_materials.values_list("level", flat=True).distinct())
+
+    available_levels = [
+        level for level in VALID_LEVELS
+        if level in available_video_levels or level in available_paper_levels or level in available_study_levels
+    ]
+
+    return render(
+        request,
+        "core/subject_detail.html",
+        {
+            "subject": subject,
+            "available_levels": available_levels,
+            "available_video_levels": available_video_levels,
+            "available_paper_levels": available_paper_levels,
+            "available_study_levels": available_study_levels,
+        },
+    )
 
 
 @login_required
@@ -83,6 +103,29 @@ def past_papers_by_subject(request, subject_id):
             "selected_level": level,
             "valid_levels": VALID_LEVELS,
             "viewed_paper_ids": viewed_paper_ids,
+        },
+    )
+
+
+@login_required
+def study_materials_by_subject(request, subject_id):
+    subject = get_object_or_404(Subject, id=subject_id)
+    level = request.GET.get("level", "").strip()
+
+    if level in VALID_LEVELS:
+        study_materials = StudyMaterial.objects.filter(subject=subject, level=level).order_by("-uploaded_at")
+    else:
+        study_materials = StudyMaterial.objects.none()
+        level = ""
+
+    return render(
+        request,
+        "core/study_materials_by_subject.html",
+        {
+            "subject": subject,
+            "study_materials": study_materials,
+            "selected_level": level,
+            "valid_levels": VALID_LEVELS,
         },
     )
 

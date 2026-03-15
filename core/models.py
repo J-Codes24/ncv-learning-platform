@@ -93,3 +93,27 @@ class PaperProgress(models.Model):
 
     def __str__(self):
         return f"{self.student.username} - {self.paper.title}"
+
+
+def study_material_upload_path(instance, filename):
+    subject_name = instance.subject.name if instance.subject else "unknown_subject"
+    level = instance.level if getattr(instance, "level", None) else "L2"
+    return f"study_material/{subject_name}/{level}/{filename}"
+
+
+class StudyMaterial(models.Model):
+    LEVEL_CHOICES = [
+        ("L2", "Level 2"),
+        ("L3", "Level 3"),
+        ("L4", "Level 4"),
+    ]
+
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="study_materials")
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    level = models.CharField(max_length=2, choices=LEVEL_CHOICES, default="L2")
+    material_file = models.FileField(upload_to=study_material_upload_path)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.subject.name} - {self.title} ({self.level})"
