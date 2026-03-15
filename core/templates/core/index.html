@@ -24,14 +24,14 @@
             min-height: 100vh;
         }
         .hero-box {
-            background: rgba(255, 255, 255, 0.94);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 22px;
-            padding: 45px;
+            padding: 40px;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.28);
         }
         .welcome-title {
             font-weight: 800;
-            font-size: 2.6rem;
+            font-size: 2.4rem;
             color: #1f2937;
         }
         .stats-box {
@@ -52,12 +52,8 @@
             overflow: hidden;
         }
         .subject-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.24);
-        }
-        .subject-btn {
-            width: 100%;
-            border-radius: 10px;
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.18);
         }
         .feature-card {
             border: none;
@@ -65,13 +61,25 @@
             background: rgba(255, 255, 255, 0.95);
             box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
         }
+        .level-pill {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 999px;
+            text-decoration: none;
+            border: 1px solid #ced4da;
+            color: #212529;
+            background: #fff;
+            font-weight: 600;
+        }
+        .level-pill.active {
+            background: #0d6efd;
+            color: #fff;
+            border-color: #0d6efd;
+        }
         .no-results {
             display: none;
             color: #6c757d;
             font-weight: 600;
-        }
-        footer {
-            background: rgba(255, 255, 255, 0.95);
         }
     </style>
 </head>
@@ -111,8 +119,15 @@
         <div class="hero-box text-center mb-5">
             <h1 class="welcome-title mb-3">Welcome to NCV Learning</h1>
             <p class="lead text-muted mb-4">
-                Access video lessons, past examination papers, and subject learning resources in one place.
+                First choose a level, then only subjects with content for that level will appear.
             </p>
+
+            <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
+                <a href="{% url 'home' %}" class="level-pill {% if not selected_level %}active{% endif %}">All Levels</a>
+                {% for lvl in valid_levels %}
+                    <a href="{% url 'home' %}?level={{ lvl }}" class="level-pill {% if selected_level == lvl %}active{% endif %}">{{ lvl }}</a>
+                {% endfor %}
+            </div>
 
             <div class="mb-4" style="max-width: 450px; margin: auto;">
                 <input type="text" id="subjectSearch" class="form-control form-control-lg" placeholder="Search subjects...">
@@ -121,8 +136,8 @@
             <div class="row g-3 mt-2">
                 <div class="col-md-4">
                     <div class="stats-box">
-                        <div class="stats-number">{{ subjects|length }}</div>
-                        <div>Total Subjects</div>
+                        <div class="stats-number">{{ subject_cards|length }}</div>
+                        <div>Subjects Shown</div>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -144,16 +159,16 @@
             <div class="col-md-4">
                 <div class="card feature-card h-100 p-3">
                     <div class="card-body">
-                        <h5 class="card-title">🎥 Video Lessons</h5>
-                        <p class="card-text">Watch subject videos anytime to revise class content and strengthen understanding.</p>
+                        <h5 class="card-title">🎯 Cleaner Browsing</h5>
+                        <p class="card-text">Students can filter by level first so they do not see subjects that do not belong to their level.</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card feature-card h-100 p-3">
                     <div class="card-body">
-                        <h5 class="card-title">📄 Past Papers</h5>
-                        <p class="card-text">Open and download previous question papers for revision and exam preparation.</p>
+                        <h5 class="card-title">📚 One Subject, Many Levels</h5>
+                        <p class="card-text">A subject stays as one subject name, while the level inside it decides which videos and papers appear.</p>
                     </div>
                 </div>
             </div>
@@ -169,27 +184,52 @@
                 <div class="card feature-card h-100 p-3">
                     <div class="card-body">
                         <h5 class="card-title">📊 Progress Tracking</h5>
-                        <p class="card-text">Students can register, sign in, and track their own learning progress.</p>
+                        <p class="card-text">Students can register, sign in, and keep track of completed videos and viewed papers.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="hero-box text-center mb-5">
-            <h3 class="mb-3">About the Platform</h3>
-            <p class="text-muted mb-0">NCV Learning Platform is built to support NCV students with accessible digital learning resources. The platform aims to make exam preparation easier through organised subject materials, revision support, and student progress tracking.</p>
-        </div>
-
         <div class="hero-box text-center">
-            <h3 class="mb-4">Available Subjects</h3>
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                <div class="text-start">
+                    <h3 class="mb-1">Available Subjects</h3>
+                    {% if selected_level %}
+                        <p class="text-muted mb-0">Showing only subjects with {{ selected_level }} content.</p>
+                    {% else %}
+                        <p class="text-muted mb-0">Choose a level above for a cleaner subject list.</p>
+                    {% endif %}
+                </div>
+            </div>
 
             <div class="row justify-content-center" id="subjectsContainer">
-                {% for subject in subjects %}
-                    <div class="col-md-4 col-lg-3 mb-4 subject-item">
+                {% for item in subject_cards %}
+                    <div class="col-md-6 col-lg-4 mb-4 subject-item">
                         <div class="card subject-card shadow-sm h-100">
-                            <div class="card-body text-center d-flex flex-column justify-content-center">
-                                <h5 class="card-title mb-3 subject-name">{{ subject.name }}</h5>
-                                <a href="{% url 'subject_detail' subject.id %}" class="btn btn-primary subject-btn">Open Subject</a>
+                            <div class="card-body text-start p-4 d-flex flex-column">
+                                <h5 class="card-title mb-3 subject-name">{{ item.subject.name }}</h5>
+
+                                <div class="mb-3 d-flex flex-wrap gap-2">
+                                    {% for level in item.levels %}
+                                        <span class="badge {% if selected_level == level.code %}bg-primary{% else %}bg-secondary{% endif %}">
+                                            {{ level.code }} • {{ level.video_count }} videos • {{ level.paper_count }} papers
+                                        </span>
+                                    {% endfor %}
+                                </div>
+
+                                <p class="text-muted small mb-4">
+                                    {{ item.total_resources }} total learning resources available for this subject.
+                                </p>
+
+                                <div class="mt-auto d-flex gap-2 flex-wrap">
+                                    {% if selected_level %}
+                                        <a href="{% url 'subject_detail' item.subject.id %}?level={{ selected_level }}" class="btn btn-primary">Open Subject</a>
+                                        <a href="{% url 'videos_by_subject' item.subject.id %}?level={{ selected_level }}" class="btn btn-outline-primary">Videos</a>
+                                        <a href="{% url 'past_papers_by_subject' item.subject.id %}?level={{ selected_level }}" class="btn btn-outline-success">Past Papers</a>
+                                    {% else %}
+                                        <a href="{% url 'subject_detail' item.subject.id %}" class="btn btn-primary">Choose Level</a>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
