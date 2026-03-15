@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 def video_upload_path(instance, filename):
@@ -23,15 +24,15 @@ class Subject(models.Model):
 
 class Video(models.Model):
     LEVEL_CHOICES = [
-        ('L2', 'Level 2'),
-        ('L3', 'Level 3'),
-        ('L4', 'Level 4'),
+        ("L2", "Level 2"),
+        ("L3", "Level 3"),
+        ("L4", "Level 4"),
     ]
 
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='videos')
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="videos")
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
-    level = models.CharField(max_length=2, choices=LEVEL_CHOICES, default='L2')
+    level = models.CharField(max_length=2, choices=LEVEL_CHOICES, default="L2")
     video_file = models.FileField(upload_to=video_upload_path, blank=True, null=True)
     video_url = models.URLField(blank=True, null=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
@@ -42,17 +43,53 @@ class Video(models.Model):
 
 class PastPaper(models.Model):
     LEVEL_CHOICES = [
-        ('L2', 'Level 2'),
-        ('L3', 'Level 3'),
-        ('L4', 'Level 4'),
+        ("L2", "Level 2"),
+        ("L3", "Level 3"),
+        ("L4", "Level 4"),
     ]
 
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='past_papers')
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name="past_papers")
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
-    level = models.CharField(max_length=2, choices=LEVEL_CHOICES, default='L2')
+    level = models.CharField(max_length=2, choices=LEVEL_CHOICES, default="L2")
     paper_file = models.FileField(upload_to=paper_upload_path)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.subject.name} - {self.title} ({self.level})"
+
+
+class StudentProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="student_profile")
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username
+
+
+class VideoProgress(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="video_progress")
+    video = models.ForeignKey(Video, on_delete=models.CASCADE, related_name="progress_records")
+    completed = models.BooleanField(default=False)
+    watched_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("student", "video")
+        ordering = ["-watched_at"]
+
+    def __str__(self):
+        return f"{self.student.username} - {self.video.title}"
+
+
+class PaperProgress(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="paper_progress")
+    paper = models.ForeignKey(PastPaper, on_delete=models.CASCADE, related_name="progress_records")
+    viewed = models.BooleanField(default=False)
+    viewed_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("student", "paper")
+        ordering = ["-viewed_at"]
+
+    def __str__(self):
+        return f"{self.student.username} - {self.paper.title}"
