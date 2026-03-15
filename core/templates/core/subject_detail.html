@@ -23,10 +23,10 @@
             padding-bottom: 40px;
         }
         .content-box {
-            background: rgba(255,255,255,0.95);
-            border-radius: 22px;
-            padding: 40px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
         }
         .option-card {
             border: none;
@@ -35,7 +35,7 @@
         }
         .option-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 14px 28px rgba(0,0,0,0.18);
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
         }
     </style>
 </head>
@@ -54,33 +54,35 @@
     <div class="container py-5">
         <div class="content-box text-center">
             <h1 class="mb-3">{{ subject.name }}</h1>
-            <p class="lead mb-5">Select a section below to access learning resources for this subject.</p>
+            <p class="lead text-muted mb-4">Select a level below. Only the resources for that level will open.</p>
 
-            <div class="row g-4 justify-content-center">
-                <div class="col-md-5">
-                    <div class="card option-card h-100 shadow-sm">
-                        <div class="card-body p-4">
-                            <div class="mb-3 fs-1">🎥</div>
-                            <h4>Video Lessons</h4>
-                            <p>Watch available learning videos for this subject.</p>
-                            <a href="{% url 'videos_by_subject' subject.id %}" class="btn btn-primary">Open Videos</a>
+            {% if level_cards %}
+                <div class="row justify-content-center g-4">
+                    {% for level in level_cards %}
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card option-card h-100 shadow-sm {% if level.is_selected %}border border-primary border-3{% endif %}">
+                                <div class="card-body p-4">
+                                    <div class="mb-3 fs-2">📘</div>
+                                    <h4>{{ level.code }}</h4>
+                                    <p class="text-muted mb-2">{{ level.video_count }} videos available</p>
+                                    <p class="text-muted mb-4">{{ level.paper_count }} past papers available</p>
+                                    <div class="d-grid gap-2">
+                                        <a href="{% url 'videos_by_subject' subject.id %}?level={{ level.code }}" class="btn btn-primary">Open Videos</a>
+                                        <a href="{% url 'past_papers_by_subject' subject.id %}?level={{ level.code }}" class="btn btn-success">Open Past Papers</a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    {% endfor %}
                 </div>
+            {% else %}
+                <div class="alert alert-warning">No videos or papers have been added for this subject yet.</div>
+            {% endif %}
 
-                <div class="col-md-5">
-                    <div class="card option-card h-100 shadow-sm">
-                        <div class="card-body p-4">
-                            <div class="mb-3 fs-1">📄</div>
-                            <h4>Past Papers</h4>
-                            <p>Open, preview, and download past exam papers.</p>
-                            <a href="{% url 'past_papers_by_subject' subject.id %}" class="btn btn-success">Open Past Papers</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-5">
+            <div class="mt-5 d-flex justify-content-center gap-2 flex-wrap">
+                {% if selected_level %}
+                    <a href="{% url 'home' %}?level={{ selected_level }}" class="btn btn-outline-primary">Back to {{ selected_level }} Subjects</a>
+                {% endif %}
                 <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
             </div>
         </div>

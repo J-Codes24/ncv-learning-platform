@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from .forms import RegisterForm
 from .models import (
@@ -18,15 +19,97 @@ from .models import (
 VALID_LEVELS = ["L2", "L3", "L4"]
 
 
+def _build_subject_cards(selected_level=""):
+    subjects = Subject.objects.all().order_by("name")
+    subject_cards = []
+
+    for subject in subjects:
+        level_summary = []
+        has_selected_level = False
+        total_resources = 0
+
+        for level in VALID_LEVELS:
+            video_count = Video.objects.filter(subject=subject, level=level).count()
+            paper_count = PastPaper.objects.filter(subject=subject, level=level).count()
+            has_content = video_count > 0 or paper_count > 0
+
+            if has_content:
+                total_resources += video_count + paper_count
+                level_summary.append(
+                    {
+                        "code": level,
+                        "video_count": video_count,
+                        "paper_count": paper_count,
+                        "has_content": has_content,
+                    }
+                )
+
+            if selected_level == level and has_content:
+                has_selected_level = True
+
+        if selected_level and not has_selected_level:
+            continue
+
+        subject_cards.append(
+            {
+                "subject": subject,
+                "levels": level_summary,
+                "total_resources": total_resources,
+            }
+        )
+
+    return subject_cards
+
+
 def home(request):
-    subjects = Subject.objects.all()
-    return render(request, "core/index.html", {"subjects": subjects})
+    selected_level = request.GET.get("level", "").strip()
+    if selected_level not in VALID_LEVELS:
+        selected_level = ""
+
+    subject_cards = _build_subject_cards(selected_level)
+
+    return render(
+        request,
+        "core/index.html",
+        {
+            "subject_cards": subject_cards,
+            "selected_level": selected_level,
+            "valid_levels": VALID_LEVELS,
+        },
+    )
 
 
 @login_required
 def subject_detail(request, subject_id):
     subject = get_object_or_404(Subject, id=subject_id)
-    return render(request, "core/subject_detail.html", {"subject": subject})
+    selected_level = request.GET.get("level", "").strip()
+    if selected_level not in VALID_LEVELS:
+        selected_level = ""
+
+    level_cards = []
+    for level in VALID_LEVELS:
+        video_count = Video.objects.filter(subject=subject, level=level).count()
+        paper_count = PastPaper.objects.filter(subject=subject, level=level).count()
+        if video_count > 0 or paper_count > 0:
+            level_cards.append(
+                {
+                    "code": level,
+                    "video_count": video_count,
+                    "paper_count": paper_count,
+                    "is_selected": selected_level == level,
+                }
+            )
+
+    return render(
+        request,
+        "core/subject_detail.html",
+        {
+            "subject": subject,
+            "level_cards": level_cards,
+            "selected_level": selected_level,
+            "valid_levels": VALID_LEVELS,
+        },
+    )
 
 
 @login_required
@@ -35,7 +118,7 @@ def videos_by_subject(request, subject_id):
     level = request.GET.get("level", "").strip()
 
     if level in VALID_LEVELS:
-        videos = Video.objects.filter(subject=subject, level=level).order_by("-uploaded_at")
+        videos = Video.objects.filter(subject=subject, level=level).order_by("title", "-uploaded_at")
     else:
         videos = Video.objects.none()
         level = ""
@@ -64,7 +147,7 @@ def past_papers_by_subject(request, subject_id):
     level = request.GET.get("level", "").strip()
 
     if level in VALID_LEVELS:
-        papers = PastPaper.objects.filter(subject=subject, level=level).order_by("-uploaded_at")
+        papers = PastPaper.objects.filter(subject=subject, level=level).order_by("title", "-uploaded_at")
     else:
         papers = PastPaper.objects.none()
         level = ""
@@ -210,7 +293,7 @@ def mark_video_complete(request, video_id):
         defaults={"completed": True},
     )
 
-    return redirect("videos_by_subject", subject_id=video.subject.id)
+    return redirect(f"{reverse('videos_by_subject', kwargs={'subject_id': video.subject.id})}?level={video.level}")
 
 
 @login_required
@@ -223,7 +306,7 @@ def mark_paper_viewed(request, paper_id):
         defaults={"viewed": True},
     )
 
-    return redirect("past_papers_by_subject", subject_id=paper.subject.id)
+    return redirect(f"{reverse('past_papers_by_subject', kwargs={'subject_id': paper.subject.id})}?level={paper.level}")
 
 
 def create_admin(request):
