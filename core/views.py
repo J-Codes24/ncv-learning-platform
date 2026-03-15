@@ -83,7 +83,7 @@ def home(request):
 @login_required
 def subject_detail(request, subject_id):
     subject = get_object_or_404(Subject, id=subject_id)
-<<<<<<< HEAD
+
     available_video_levels = set(subject.videos.values_list("level", flat=True).distinct())
     available_paper_levels = set(subject.past_papers.values_list("level", flat=True).distinct())
     available_study_levels = set(subject.study_materials.values_list("level", flat=True).distinct())
@@ -92,45 +92,18 @@ def subject_detail(request, subject_id):
         level for level in VALID_LEVELS
         if level in available_video_levels or level in available_paper_levels or level in available_study_levels
     ]
-=======
-    selected_level = request.GET.get("level", "").strip()
-    if selected_level not in VALID_LEVELS:
-        selected_level = ""
-
-    level_cards = []
-    for level in VALID_LEVELS:
-        video_count = Video.objects.filter(subject=subject, level=level).count()
-        paper_count = PastPaper.objects.filter(subject=subject, level=level).count()
-        if video_count > 0 or paper_count > 0:
-            level_cards.append(
-                {
-                    "code": level,
-                    "video_count": video_count,
-                    "paper_count": paper_count,
-                    "is_selected": selected_level == level,
-                }
-            )
->>>>>>> 62079b602aff7f4d22408df3b927763fb23a091c
 
     return render(
         request,
         "core/subject_detail.html",
         {
             "subject": subject,
-<<<<<<< HEAD
             "available_levels": available_levels,
             "available_video_levels": available_video_levels,
             "available_paper_levels": available_paper_levels,
             "available_study_levels": available_study_levels,
-=======
-            "level_cards": level_cards,
-            "selected_level": selected_level,
-            "valid_levels": VALID_LEVELS,
->>>>>>> 62079b602aff7f4d22408df3b927763fb23a091c
         },
     )
-
-
 @login_required
 def videos_by_subject(request, subject_id):
     subject = get_object_or_404(Subject, id=subject_id)
